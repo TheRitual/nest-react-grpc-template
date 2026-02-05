@@ -116,7 +116,7 @@ function runCommand(command, args, cwd, silent = false) {
     const proc = spawn(command, args, {
       cwd,
       stdio: silent ? 'ignore' : 'inherit',
-      shell: true,
+      shell: false,
     });
 
     proc.on('close', (code) => {
@@ -127,7 +127,13 @@ function runCommand(command, args, cwd, silent = false) {
       }
     });
 
-    proc.on('error', reject);
+    proc.on('error', (error) => {
+      if (error.code === 'ENOENT') {
+        reject(new Error(`Command not found: ${command}. Make sure it's installed and in your PATH.`));
+      } else {
+        reject(error);
+      }
+    });
   });
 }
 
@@ -540,7 +546,7 @@ async function main() {
   log('Installing dependencies...', colors.cyan, icons.package);
   
   try {
-    await runCommand('npm', ['install'], config.projectPath, false);
+    await runCommand('npm', ['install', '--no-audit', '--loglevel=error'], config.projectPath, false);
     log('Dependencies installed', colors.green, icons.check);
   } catch (error) {
     log('Failed to install dependencies, please run: npm install', colors.yellow, icons.warning);
