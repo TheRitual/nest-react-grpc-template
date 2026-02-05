@@ -7,6 +7,9 @@
   "scripts": {
     "create": "node create-project.mjs"
   },
+  "bin": {
+    "ritual-create": "./create-project.mjs"
+  },
   "engines": {
     "node": ">=18"
   },

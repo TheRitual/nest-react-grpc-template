@@ -138,6 +138,9 @@ function runCommand(command, args, cwd, silent = false) {
 }
 
 async function main() {
+  const cliProjectName = process.argv[2];
+  const cliProjectPath = process.argv[3];
+
   console.clear();
   log(`${icons.rocket} Nest + React + gRPC Project Generator`, colors.cyan, '');
   log('Create a new monorepo project with all the tools you need\n', colors.dim, '');
@@ -148,16 +151,26 @@ async function main() {
     process.exit(1);
   }
 
-  const repoName = await question(`${colors.cyan}${icons.folder} Repository name${colors.reset} (e.g., my-awesome-project): `);
-  if (!repoName.trim()) {
-    log('Repository name is required', colors.red, icons.cross);
-    process.exit(1);
+  let repoName;
+  let fullProjectPath;
+  if (cliProjectName !== undefined && cliProjectName.trim() !== '') {
+    repoName = cliProjectName.trim();
+    const defaultPath = cliProjectPath !== undefined && cliProjectPath.trim() !== ''
+      ? resolve(cliProjectPath.trim())
+      : resolve(toKebabCase(repoName));
+    fullProjectPath = defaultPath;
+  } else {
+    repoName = await question(`${colors.cyan}${icons.folder} Repository name${colors.reset} (e.g., my-awesome-project): `);
+    if (!repoName.trim()) {
+      log('Repository name is required', colors.red, icons.cross);
+      process.exit(1);
+    }
+    repoName = repoName.trim();
+    const defaultPath = toKebabCase(repoName);
+    const projectPathInput = await question(`${colors.cyan}${icons.folder} Project path${colors.reset} [./${defaultPath}]: `);
+    const projectPath = projectPathInput.trim() || defaultPath;
+    fullProjectPath = resolve(projectPath);
   }
-
-  const defaultPath = toKebabCase(repoName.trim());
-  const projectPathInput = await question(`${colors.cyan}${icons.folder} Project path${colors.reset} [./${defaultPath}]: `);
-  const projectPath = projectPathInput.trim() || defaultPath;
-  const fullProjectPath = resolve(projectPath);
 
   if (existsSync(fullProjectPath) && readdirSync(fullProjectPath).length > 0) {
     log(`Directory ${fullProjectPath} already exists and is not empty`, colors.red, icons.cross);

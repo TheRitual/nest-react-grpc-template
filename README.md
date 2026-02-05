@@ -10,7 +10,16 @@ Run the project generator:
 npm run create
 # or
 node create-project.mjs
+# or (with project name; creates ./<name> by default)
+ritual-create new-project
 ```
+
+### Install and run as `ritual-create` (JSR package @ritual/create)
+
+- **npm / npx:** `npx jsr:@ritual/create new-project` — creates `./new-project` in the current directory (Windows, Mac, Linux).
+- **Deno:** `deno run -A jsr:@ritual/create new-project` or install globally: `deno install -n ritual-create jsr:@ritual/create` then `ritual-create new-project`.
+
+Optional second argument is the output directory; default is `./<monorepo-name>`.
 
 The interactive CLI will guide you through:
 - Project name and package scope
@@ -63,6 +72,15 @@ The generator creates a complete Turborepo monorepo with:
 2. Run `npm run create`
 3. Follow the interactive prompts
 4. Start coding in your new project!
+
+## Publishing to JSR (CI/CD)
+
+The repo is set up to publish the package **@ritual/create** to [JSR](https://jsr.io) via GitHub Actions:
+
+1. Create the package **@ritual/create** on [jsr.io](https://jsr.io/new) and link it to this GitHub repository (package settings → GitHub repository).
+2. Push to `main` or run the **Publish to JSR** workflow manually; it runs `npx jsr publish` and uses OIDC (no secrets required).
+
+Workflow file: `.github/workflows/publish-jsr.yml`. Package config: `jsr.json`.
 
 ## License
 
